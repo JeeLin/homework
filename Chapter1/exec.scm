@@ -37,7 +37,7 @@
 
 
 ;P6
-; 1.7
+;1.7
 (define threshold 0.00001)
 
 (define (average x y)
@@ -64,7 +64,7 @@
 ; (sqrt 2)
 (sqrt 9)
 
-; 1.8
+;1.8
 (define threshold 0.00001)
 
 (define (improve guess x)
@@ -92,6 +92,7 @@
 
 ;P23
 ;1.10
+; [Ackermann函数](https://zhuanlan.zhihu.com/p/93644792)
 (define (A x y)
     (cond ((= y 0) 0)
         ((= x 0) (* 2 y))
@@ -101,3 +102,40 @@
 (A 1 10)
 (A 2 4)
 (A 3 3)
+(A 4 3); out of memory
+; f(x,y) = f(x-1, f(x, y-1))
+; f(x,0) = 0 ==> f(x,2) = f(x-1,f(x,1)) = f(x-1,2) = f(x-2,2) = ... = f(0,2) = 4
+;                f(x,3) = f(x-1,f(x,2)) = f(x-1,4) = f(x-2,f(x-3,3)) = f(x-2,f(x-4,f(x-3,2)))
+; f(0,y) = 2y
+; f(x,1) = 2
+; f(x,2) = 4
+
+;P27
+;1.11
+(define (f n)
+    (cond ((< n 3) n)
+          (else (+ (f (- n 1)) (* 2 (f (- n 2))) (* 3 (f (- n 3))
+        )))))
+(f 1)
+(f 2)
+(f 3)
+(f 4)
+(f 5)
+(f 6)
+(f 7)
+(f 8)
+
+(define (g n)
+    (define (g-iter count next1 next2 n)
+        (if (= n 0) count
+            (g-iter (+ count ) next1 next2 (+ current next1 next2) (- n 1))))    
+    
+    (g-iter 0 1 2 n))
+(g 1)
+(g 2)
+(g 3)
+(g 4)
+(g 5)
+(g 6)
+(g 7)
+(g 8)
