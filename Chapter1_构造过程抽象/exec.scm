@@ -117,18 +117,26 @@
           (else (+ (f (- n 1)) (* 2 (f (- n 2))) (* 3 (f (- n 3))
         )))))
 (f 1)
+;Value: 1
 (f 2)
+;Value: 2
 (f 3)
+;Value: 4
 (f 4)
+;Value: 11
 (f 5)
+;Value: 25
 (f 6)
+;Value: 59
 (f 7)
+;Value: 142
 (f 8)
+;Value: 335
 
 (define (g n)
     (define (g-iter count next1 next2 n)
         (if (= n 0) count
-            (g-iter (+ count ) next1 next2 (+ current next1 next2) (- n 1))))    
+            (g-iter next1 next2 (+ (* 3 count) (* 2 next1) next2) (- n 1))))    
     
     (g-iter 0 1 2 n))
 (g 1)
@@ -139,3 +147,21 @@
 (g 6)
 (g 7)
 (g 8)
+
+;1.12 帕斯卡三角
+(define (p x y); x>=y
+    (if (or (= x 1) (= y 1) (= x y)) 1
+        (+ (p (- x 1) (- y 1)) (p (- x 1) y))))
+
+(p 1 1)
+(p 2 1)
+(p 2 2)
+(p 3 2)
+(p 4 2)
+(p 5 2)
+(p 5 3)
+
+;1.13
+; [生成函数计算斐波那契数列通项](https://blog.csdn.net/china_xyc/article/details/90115657)
+; [斐波那契与黄金分割数](https://blog.csdn.net/china_xyc/article/details/104279724)
+
