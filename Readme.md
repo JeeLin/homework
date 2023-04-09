@@ -1,13 +1,4 @@
-# 教材
-[中文教材](sicp.pdf)
-
-# vscode及编译器安装
-- sudo apt-get install mit-scheme
-- vscode-scheme插件
-- Code Runner插件
-
-`
-    "code-runner.executorMap": {
-        "scheme": "scheme <"
-    }
-`
+# 学习记录
+## 经典阅读
+### 计算机程序的构造和解释
+[SICP](./SICP/)
