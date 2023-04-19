@@ -34,7 +34,7 @@
 (test o (p))
 ; 正则序会直接输出
 ; 应用序会无限循环
-
+;由Ben Bitdiddle发明
 
 ;P6
 ;1.7
@@ -61,7 +61,7 @@
 (define (sqrt x)
     (sqrt-iter 1.0 x))
 
-; (sqrt 2)
+(sqrt 2)
 (sqrt 9)
 
 ;1.8
@@ -88,9 +88,39 @@
     (cube-iter 1.0 x))
 
 (cube 16)
-; (cube 27)
+(cube 27)
 
 ;P23
+;1.9
+(define (+ a b)
+  (if (= a 0) 
+      b 
+      (inc (+ (dec a) b))))
+
+(+ 4 5)
+(inc (+ (dec 4) 5))
+(inc (inc (+ (dec 3) 5)))
+(inc (inc (inc (+ (dec 2) 5))))
+(inc (inc (inc (inc (+ (dec 1) 5)))))
+(inc (inc (inc (inc 5))))
+(inc (inc (inc 6)))
+(inc (inc 7))
+(inc 8)
+9
+
+(define (+ a b)
+  (if (= a 0) 
+      b 
+      (+ (dec a) (inc b))))
+
+(+ 4 5)
+(+ (dec 4) (inc 5)); (+ 3 6)
+(+ (dec 3) (inc 6)); (+ 2 7)
+(+ (dec 2) (inc 7)); (+ 1 8)
+(+ (dec 1) (inc 8)); (+ 0 9)
+9
+
+
 ;1.10
 ; [Ackermann函数](https://zhuanlan.zhihu.com/p/93644792)
 (define (A x y)
@@ -107,8 +137,34 @@
 ; f(x,0) = 0 ==> f(x,2) = f(x-1,f(x,1)) = f(x-1,2) = f(x-2,2) = ... = f(0,2) = 4
 ;                f(x,3) = f(x-1,f(x,2)) = f(x-1,4) = f(x-2,f(x-3,3)) = f(x-2,f(x-4,f(x-3,2)))
 ; f(0,y) = 2y
-; f(x,1) = 2
-; f(x,2) = 4
+; f(1,y) = f(0, f(1, y-1)) = 2f(1, y-1) = 2 ^ y
+; f(2,y) = f(1, f(2, y-1)) = 2 ^ f(2, y-1) = 2 ^ f(1, f(2, y-2)) = 2 !! y
+
+(define (f n) (A 0 n))
+(define (g n) (A 1 n))
+(define (h n) (A 2 n))
+(define (k n) (* 5 n n))
+
+(f 0)
+(f 1)
+(f 2)
+(f 3)
+(f 4)
+(g 0)
+(g 1)
+(g 2)
+(g 3)
+(g 4)
+(h 0)
+(h 1)
+(h 2)
+(h 3)
+(h 4)
+(k 0)
+(k 1)
+(k 2)
+(k 3)
+(k 4)
 
 ;P27
 ;1.11
