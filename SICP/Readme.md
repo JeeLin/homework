@@ -2,7 +2,7 @@
 [中文教材](sicp.pdf)
 
 # vscode及编译器安装
-- sudo apt-get install mit-scheme
+- sudo apt-get install -y mit-scheme
 - vscode-scheme插件
 - Code Runner插件
 

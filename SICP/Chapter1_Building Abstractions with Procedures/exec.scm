@@ -224,6 +224,7 @@
 
 ;1.14
 ;P29
+; 详见图片 1.14.png
 ; (define (count-change amount)
 ;   (cc amount 5))
 
@@ -267,17 +268,19 @@
 ; 计算大小就是叶子总数 2^n
 
 ;1.15
-(define threshold 0.1)
-(define (cube x) (* x x x))
-(define (p x ) 
-        (- (* 3 x) (* 4 (cube x))))
+(define (cube x) (* x x x)); 时间 3 空间 0 执行 1
 
-(define (sine x)
-        (if (not (> (abs x) threshold)) 
-            x 
-            (p (/ x 3))))
+(define (p x) 
+    (- (* 3 x) (* 4 (cube x)))); 时间 4 空间 0 执行 1
 
-(sine 12.15) 
-;a) 12.15/3 = 4.05 /3 = 1.35 /3= 0.45 /4=0.15 /3 =0.05 共5次迭代
+(define (sine angle)
+    (if (not (> (abs angle) 0.1)); 时间 3 空间 0 执行 log3(x)+1
+        angle; 时间 1 空间 0 执行 1
+        (p (sine (/ angle 3.0))))); 执行 log3(x) 入栈出栈空间1
 
-;b) 0.1 * 3^x >= n ==> x = \Theta(log3(n))
+(trace-entry p)
+(sine 12.15)
+;a) 每次迭代都是1/3，直至x小于0.1。(1/3)^n * 12.15 < 0.1, n > 4, n = 5
+;b)
+;时间 3 * (log3(x) + 1) + 1 + log3(x) * (4 + 3) = 10 * log3(x) + 4 = O(lgx)
+;空间 log3(x) * 1 = O(lgx)
