@@ -267,3 +267,17 @@
 ; 计算大小就是叶子总数 2^n
 
 ;1.15
+(define threshold 0.1)
+(define (cube x) (* x x x))
+(define (p x ) 
+        (- (* 3 x) (* 4 (cube x))))
+
+(define (sine x)
+        (if (not (> (abs x) threshold)) 
+            x 
+            (p (/ x 3))))
+
+(sine 12.15) 
+;a) 12.15/3 = 4.05 /3 = 1.35 /3= 0.45 /4=0.15 /3 =0.05 共5次迭代
+
+;b) 0.1 * 3^x >= n ==> x = \Theta(log3(n))
