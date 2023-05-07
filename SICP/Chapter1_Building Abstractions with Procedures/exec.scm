@@ -284,3 +284,36 @@
 ;b)
 ;时间 3 * (log3(x) + 1) + 1 + log3(x) * (4 + 3) = 10 * log3(x) + 4 = O(lgx)
 ;空间 log3(x) * 1 = O(lgx)
+
+;1.16
+;P30
+(define (fast-expt b n)
+    (define (even? n)
+        (= 0 (remainder n 2)))
+
+    (define (square x) (* x x))
+
+    (define (fast-expt-iter b n result)
+        (cond ((= n 0) result)
+              ((even? n) (fast-expt-iter (square b) (/ n 2) result))
+              (else (fast-expt-iter b (- n 1) (* b result)))))
+    
+    (trace-entry fast-expt-iter)
+    (fast-expt-iter b n 1))
+
+(fast-expt 3 6)
+
+;1.17
+(define (fast-multi a b)
+    (define (even? n)
+        (= 0 (remainder n 2)))
+    
+    (define (double x) (* x 2))
+    (define (halve x) (/ x 2))
+
+    (cond ((= b 0) 0)
+          ((even? b) (double (fast-multi a (halve b))))
+          (else (+ a (fast-multi a (- b 1))))))
+
+(fast-multi 2 4)
+(fast-multi 7 11)
