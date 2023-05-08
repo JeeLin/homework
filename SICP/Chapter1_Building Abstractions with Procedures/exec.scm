@@ -317,3 +317,23 @@
 
 (fast-multi 2 4)
 (fast-multi 7 11)
+
+;1.18
+(define (fast-multi a b)
+    (define (even? n)
+        (= 0 (remainder n 2)))
+    
+    (define (double x) (* x 2))
+    (define (halve x) (/ x 2))
+
+    (define (fast-multi-iter a b result)
+        (cond ((= b 0) result)
+              ((even? b) (fast-multi-iter (double a) (halve b) result))
+              (else (fast-multi-iter a (- b 1) (+ result a)))))
+    
+    (fast-multi-iter a b 0))
+
+(fast-multi 2 4)
+(fast-multi 7 11)
+
+;1.19
