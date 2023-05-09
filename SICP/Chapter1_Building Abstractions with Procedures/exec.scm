@@ -337,3 +337,52 @@
 (fast-multi 7 11)
 
 ;1.19
+;a <- bq+a(q+p)  b <- bp+aq
+;a <- q(bp+aq)+q(bq+aq+ap)+p(bq+aq+ap)=bpq+aqq+bqq+aqq+apq+bpq+apq+app = b(2pq+qq)+a(2qq+2pq+pp)
+;b <- p(bp+aq)+q(bq+a(q+p))=bpp+apq+bqq+aqq+apq = b(pp+qq)+a(2pq+qq)
+;p'=pp+qq  q'=2pq+qq
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+
+(define (square x) (* x x))
+
+(define (fib-iter a b p q count)
+  (cond ((= count 0) 
+         b)
+        ((even? count)
+         (fib-iter a
+                   b
+                   (+ (square p) (square q))  ;compute p'
+                   (+ (* 2 p q) (square q))  ;compute q'
+                   (/ count 2)))
+        (else 
+         (fib-iter (+ (* b q) 
+                      (* a q) 
+                      (* a p))
+                   (+ (* b p) 
+                      (* a q))
+                   p
+                   q
+                   (- count 1)))))
+
+;1.20
+;P33
+(define (gcd a b)
+    (if (= b 0)
+        a
+        (gcd b (remainder a b))))
+(trace-entry gcd)
+(gcd 206 40)
+
+;正则序 (if (= b 0) a (gcd b (remainder a b)))
+(gcd 206 40)
+(if (= 40 0) 206 (gcd 40 (remainder 206 40)))
+(if (= 40 0) 206 (if (= (remainder 206 40) 0) 40 (gcd (remainder 206 40) (remainder 40 (remainder 206 40))))
+;...
+
+;应用序
+(gcd 206 40)
+(gcd 40 6)
+(gcd 6 4)
+(gcd 4 2)
+(gcd 2 0);5次
