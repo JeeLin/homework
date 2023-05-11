@@ -386,3 +386,213 @@
 (gcd 6 4)
 (gcd 4 2)
 (gcd 2 0);5次
+
+;1.21
+;P35
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(smallest-divisor 199)
+(smallest-divisor 1999)
+(smallest-divisor 19999)
+
+;1.22
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) 
+         n)
+        ((divides? test-divisor n) 
+         test-divisor)
+        (else (find-divisor 
+               n 
+               (+ test-divisor 1)))))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (prime? n)
+    (= n (smallest-divisor n)))
+
+(define (next-odd n)
+    (if (odd? n)
+        (+ 2 n)
+        (+ 1 n)))
+
+(define (print-prime n)
+    (newline)
+    (display n))
+
+(define (report-prime elapsed-time)
+    (newline)
+    (display "*** ")
+    (display elapsed-time))
+
+(define (start-prime-test n count start-time)
+    (cond ((= count 0) (report-prime (- (real-time-clock) start-time)))
+          ((prime? n) (print-prime n) (start-prime-test (next-odd n) (- count 1) start-time))
+          (else (start-prime-test (next-odd n) count start-time))))
+
+(define (search-for-prime n count)
+    (start-prime-test n count (real-time-clock)))
+
+(search-for-prime 1000 3);1
+(search-for-prime 10000 3);1
+(search-for-prime 100000 3);3
+(search-for-prime 1000000 3);7
+
+;1.23
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next test-divisor)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (next test-divisor)
+    (if (= test-divisor 2)
+        3
+        (+ test-divisor 2)))
+
+(define (prime? n)
+    (= n (smallest-divisor n)))
+
+(define (next-odd n)
+    (if (odd? n)
+        (+ 2 n)
+        (+ 1 n)))
+
+(define (print-prime n)
+    (newline)
+    (display n))
+
+(define (report-prime elapsed-time)
+    (newline)
+    (display "*** ")
+    (display elapsed-time))
+
+(define (start-prime-test n count start-time)
+    (cond ((= count 0) (report-prime (- (real-time-clock) start-time)))
+          ((prime? n) (print-prime n) (start-prime-test (next-odd n) (- count 1) start-time))
+          (else (start-prime-test (next-odd n) count start-time))))
+
+(define (search-for-prime n count)
+    (start-prime-test n count (real-time-clock)))
+
+(search-for-prime 1000 3);0
+(search-for-prime 10000 3);1
+(search-for-prime 100000 3);1
+(search-for-prime 1000000 3);2
+
+;1.24
+(define (expmod base exp m)
+    (define (even? n)
+        (= 0 (remainder n 2)))
+
+    (define (square x) (* x x))
+    
+    (cond ((= exp 0) 1)
+          ((even? exp) (remainder (square (expmod base (/ exp 2) m)) m))
+          (else (remainder (* base (expmod base (- exp 1) m)) m))))
+
+(define (fermat-test n)
+    (define (try-it a)
+        (= (expmod a n n) a))
+    
+    (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+    (cond ((= times 0) true)
+          ((fermat-test n) (fast-prime? n (- times 1)))
+          (else false)))
+
+(define (prime? n)
+    (fast-prime? n 10))
+
+(define (next-odd n)
+    (if (odd? n)
+        (+ 2 n)
+        (+ 1 n)))
+
+(define (print-prime n)
+    (newline)
+    (display n))
+
+(define (report-prime elapsed-time)
+    (newline)
+    (display "*** ")
+    (display elapsed-time))
+
+(define (start-prime-test n count start-time)
+    (cond ((= count 0) (report-prime (- (real-time-clock) start-time)))
+          ((prime? n) (print-prime n) (start-prime-test (next-odd n) (- count 1) start-time))
+          (else (start-prime-test (next-odd n) count start-time))))
+
+(define (search-for-prime n count)
+    (start-prime-test n count (real-time-clock)))
+
+(search-for-prime 1000 3);2
+(search-for-prime 10000 3);2 
+(search-for-prime 100000 3);2
+(search-for-prime 1000000 3);4
+
+; 使用算法复杂度或者计算步数并不能完全预测程序的运行时间
+; 即使我们能准确地计算出程序所需的步数，程序的运行速度还是会受到其他条件的影响
+; 一般来说，复杂度更低的算法，实际的运行速度总比一个复杂度更高的算法要来得更快，有时候在输入比较小时会比较难看出差别，但是当输入变得越来越大的时候，低复杂度算法的优势就会体现出来。
+
+;1.25
+; 大数字的计算一般是没有小数字计算快的，虽然题目中的方式也可以计算出结果，但是耗费更多的时间在大数字的计算上。
+
+;1.26
+; 每次remainder都会计算两次expmod，每次数分叉时都会产生一样的子树。、
+
+;1.27
+(define (expmod base exp m)
+    (define (even? n)
+        (= 0 (remainder n 2)))
+
+    (define (square x) (* x x))
+    
+    (cond ((= exp 0) 1)
+          ((even? exp) (remainder (square (expmod base (/ exp 2) m)) m))
+          (else (remainder (* base (expmod base (- exp 1) m)) m))))
+
+(define (try-it a n)
+    (= (expmod a n n) a))
+
+(try-it 2 11)
+
+(define (next test-divisor)
+    (if (= test-divisor 2)
+        3
+        (+ test-divisor 2)))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((try-it test-divisor n) (find-divisor n (next test-divisor)))
+        (else test-divisor)))
+
+(define (check n)
+  (= n (find-divisor n 2)))
+
+(check 11)
+(check 560)
+(check 561)
+(check 1105)
+(check 1729)
+(check 2465)
+(check 2821)
+(check 6601)
