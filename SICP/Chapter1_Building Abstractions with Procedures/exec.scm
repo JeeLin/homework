@@ -596,3 +596,60 @@
 (check 2465)
 (check 2821)
 (check 6601)
+
+;1.28
+; ???!!!
+; https://zhuanlan.zhihu.com/p/349360074
+(define (test? b p)
+    (and (not (= b 1))
+         (not (= b (- p 1)))
+         (= 1 (remainder (square b) p))))
+
+(define (expmod base exp m)
+    (define (even? n)
+        (= 0 (remainder n 2)))
+
+    (define (square x) (* x x))
+    
+    (cond ((= exp 0) 1)
+          ((test? base m) 0)
+          ((even? exp) (remainder (square (expmod base (/ exp 2) m)) m))
+          (else (remainder (* base (expmod base (- exp 1) m)) m))))
+
+(define (try-it a n)
+    (= (expmod a (- n 1) n) 1))
+
+(define (test-iter n times)
+    (cond ((= times 0) #t)
+          ((try-it (+ 1 (random (- n 1))) n) (test-iter n (- times 1)))
+          (else #f)))
+
+(define (Miller-Rabin-test n)
+    (test-iter n (ceiling (/ n 2))))
+
+(Miller-Rabin-test 11)
+(Miller-Rabin-test 560)
+(Miller-Rabin-test 561)
+(Miller-Rabin-test 1105)
+(Miller-Rabin-test 1729)
+(Miller-Rabin-test 2465)
+(Miller-Rabin-test 2821)
+(Miller-Rabin-test 6601)
+
+
+(define (sum term a next b)
+    (if (> a b)
+        0
+        (+ (term a)
+           (sum term (next a) next b))))
+
+(define (pi-sum a b)
+    (define (pi-term a)
+        (/ 1.0 (* a (+ a 2))))
+
+    (define (pi-next a)
+        (+ a 4))
+
+    (sum pi-term a pi-next b))
+
+(* 8 (pi-sum 1 10000))
