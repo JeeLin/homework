@@ -1,6 +1,8 @@
 # 教材
 [中文教材](sicp.pdf)
+
 [英文原版](http://sarabander.github.io/sicp/html/index.xhtml)
+
 [解题集](https://sicp.readthedocs.io/en/latest/)
 
 # vscode及编译器安装
