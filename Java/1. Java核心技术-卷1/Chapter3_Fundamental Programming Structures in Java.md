@@ -117,6 +117,7 @@ double|8字节|大约±1.79769313486231570E+308(有效位数为15位)
     \\'|单引号|\u0027
     _\\\\_|反斜杠|\u005c
     \s|空格。可以保留文本行末的空格|\u0020
+    \\*newline*|在文本块中，使用连接运算符 \\ 可以将当前行与下一行连接起来|-
     
 - Unicode转义序列会在解析代码之前得到处理
     - 定要当心注释中的u。注释
@@ -139,7 +140,7 @@ double|8字节|大约±1.79769313486231570E+308(有效位数为15位)
 
 Java5开始解决这个问题：
 - 码点(code point)是指与一个编码表中的某个字符对应的代码值。在Unicode标准中，码点采用十六进制书写，并加上前缀U+，例如U+0041就是拉丁字母A的码点。
-- Unicode的码点可以分成17个代码平面(code plane)。第一个代码平面称为基本多语言平面（basic multilingual plane)，包括码点从U+0000到U+FFFF的“经典”Unicode代码；其余的16个平面的码点为从U+10000到U+10FFFF，表示辅助字符(supplementary character)。
+- Unicode的码点可以分成17个代码平面(code plane)。第一个代码平面称为基本多语言平面（basic multilingual plane），包括码点从U+0000到U+FFFF的“经典”Unicode代码；其余的16个平面的码点为从U+10000到U+10FFFF，表示辅助字符(supplementary character)。
 - UTF-16编码采用不同长度的编码表示所有Unicode码点。在基本多语言平面中，每个字符用16位表示，通常称为代码单元(code unit)；而辅助字符编码为一对连续的代码单元。辅助字符编码使用`基本多语言平面中未用的2048个值`，通常称为替代区域（surrogate area）**(U+D800~U+DBFF用于第一个代码单元，U+DC00~U+DFFF用于第二个代码单元)**。这样设计十分巧妙，我们可以从中迅速知道一个代码单元是一个字符的编码，还是一个辅助字符的第一或第二部分。例如，O是八元数集（http:/math.ucr.edu/home/baez/octonions）的一个数学符号，码点为U+1D546,编码为两个代码单元U+D835和U+DD46。
 - 在Java中，char类型描述了UTF-16编码中的一个代码单元
 - 我们强烈建议不要在程序中使用char类型，除非确实需要处理UTF-16代码单元。最好将字符串作为抽象数据类型处理
@@ -392,5 +393,235 @@ _+ -_|从左向右
 = += -= *= /= %= &= \|= ^= <<= >>= >>>=|从右向左
 
 ## 3.6 Strings 
+从概念上讲，Java字符串就是Unicode字符序列。Java没有内置的字符串类型，而是在标准Java类库中提供了一个预定义类String
+```java
+String e = ""; // an empty string
+String greeting = "Hello";
+```
+
+### 3.6.1 Substrings
+从一个较大的字符串提取出一个子串。String从0开始计数，0到（长度-1）
+```java
+String greeting = "Hello";
+String s = greeting.substring(0, 3); // Hel
+```
+
+### 3.6.2 Concatenation
+Java语言允许使用+号连接（拼接)两个字符串
+```java
+String expletive = "Expletive";
+String PG13 = "deleted";
+String message = expletive + PG13;
+```
+如果需要把多个字符串放在一起，用一个界定符分隔，可以使用静态jon方法：
+```java
+String all = String.join(" / ", "S", "M", "L", "XL");
+// all is the string "S / M / L / XL"
+```
+在Java 11中，还提供了一个repeat方法：
+```java
+String repeated = "Java".repeat(3); // repeated is "JavaJavaJava"
+```
+
+### 3.6.3 Strings Are Immutable
+String类对象称为是`不可变`的（immutable），比如字符串对象"Hello"不可以通过String的方法修改为"hello"。但是你可以给字符变量赋一个新的字符串值
+```java
+String greeting = "Hello";
+greeting = "hello";
+```
+看起来每次复制会创建一个新String对象，会导致运行效率变低。但实际上编译器可以让字符串**共享**。
+
+为了弄清具体的工作方式，可以想象将各种字符串存放在公共的存储池中。字符串变量指向存储池中相应的位置。如果复制一个字符串变量，原始字符串与复制的字符串共享相同的字符。可以搜索关键字“Java字符串常量池”
+
+如果真的需要修改字符串本身，Java提供了一个单独的类，详见3.6.9节。
+
+### 3.6.4 Testing Strings for Equality
+```java
+s.equals(t);
+
+"Hello".equals(greeting);
+
+// 判断两个字符串是否相等，而且不区分大小写
+"Hello".equalsIgnoreCase("hello")
+```
+**不要**使用 == 检测两个字符串是否相等，因为这个运算符只能确定两个字符串在计算机硬件上是否在相同的位置。
+```java
+String greeting = "Hello"; // initialize greeting to a string
+if (greeting == "Hello") . . .
+// probably true
+if (greeting.substring(0, 3) == "Hel") . . .
+// probably false
+```
+
+### 3.6.5 Empty and Null Strings
+空串"是长度为0的字符串。可以调用以下代码检查一个字符串是否为空：
+```java
+if (str.length()==0)
+// OR
+if (str.equals(""))
+```
+String变量还可以存放一个特殊的值，名为null，表示目前没有任何对象与该变量关联。详见第4章。
+
+要检查一个字符串是否为null：
+```java
+if (str == null)
+```
+检查一个字符串既不是null也不是空串：
+```java
+if (str != null && str.length() != 0)
+```
+
+### 3.6.6 Code Points and Code Units
+char类型使用[UTF-16](#334-unicode-and-the-char-type)编码表示Unicode码点的代码单元。
+
+最常见的Unicode字符只需要使用一个代码单元表示（即一个char），而辅助字符需要两个代码单元。
+
+- length：返回字符串所需的代码单元
+    ```java
+    String greeting = "Hello";
+    int n = greeting.length(); // is 5
+    ```
+    如果想获取实际长度（即码点长度），可以使用：
+    ```java
+    int cpCount = greeting.codePointCount(0, greeting.length());
+    ```
+- charAt：返回位置n的代码单元
+    ```java
+    char first = greeting.charAt(0); // first is 'H'
+    char last = greeting.charAt(4); // last is 'o'
+    ```
+    **想获取第i个码点，应该使用：**
+    ```java
+    int index = greeting.offsetByCodePoints(0, i);
+    int cp = greeting.codePointAt(index);
+    ```
+    它们的区别在于:
+    ```java
+    String test = "😊";
+    System.out.println(test.charAt(0)); // \uD83D
+    System.out.println(test.codePointAt(0)); // 128522 码点值（code point），表示字符的整数
+    ``` 
+    ![辅助字符的String对象](images/%E8%BE%85%E5%8A%A9%E5%AD%97%E7%AC%A6%E7%9A%84String%E5%AF%B9%E8%B1%A1.png)
+
+虚拟机不一定把字符串实现为代码单元序列。在Java9中，只包含单字节代码单元的字符串使用byte数组实现，所有其他字符串使用char数组。[参考资料](https://blog.csdn.net/qq_41376740/article/details/80143215)
+
+### 3.6.7 The String API
+java.lang.String 1.0，方法后的数字代表此方法新增的版本
+- char charAt(int index) ：返回给定位置的代码单元。除非对底层的代码单元感兴趣，否则不需要调用这个方法
+- int codePointAt(int index) **5** ：返回从给定位置开始的码点
+- int offsetByCodePoints(int startIndex, int cpCount) **5** ：返回从startIndex码点开始，cpCount个码点后的码点索引
+- int compareTo(String other) ：按照字典顺序，如果字符串位于other之前，返回一个负数；如果字符串位于other之
+后，返回一个正数；如果两个字符串相等，返回0
+- IntStream codePoints() **8** ：将这个字符串的码，点作为一个流返回。调用toArray将它们放在一个数组中。
+- new String(int[] codePoints, int offset, int count) **5** ：用数组中从offset开始的count个码点构造一个字符串
+- boolean isEmpty()
+- boolean isBlank() **11** ：如果字符串为空或者由空格组成，返回true
+- boolean equals(Object other) ：如果字符串与other相等，返回true
+- boolean equalsIgnoreCase(String other) ：如果字符串与other相等（忽略大小写），返回true
+- boolean startsWith(String prefix)
+- boolean endsWith(String suffix) ：如果字符串以prefix开头或以suffix或结尾，则返回true
+- int indexOf(String str)
+- int indexOf(String str, int fromIndex)
+- int indexOf(int cp)
+- int indexOf(int cp, int fromIndex) ：返回与字符串str或码点cp匹配的第一个子串的开始位置。从索引0或fromIndex开始匹配。如果在原始字符串中不存在st,则返回-1
+- int lastIndexOf(String str)
+- int lastIndexOf(String str, int fromIndex)
+- int lastindexOf(int cp)
+- int lastindexOf(int cp, int fromIndex) ：返回与字符串str或码点cp匹配的最后一个子串的开始位置。从原始字符串末尾或fromIndex开始匹配
+- int length() ：返回字符串代码单元的个数
+- int codePointCount(int startIndex, int endIndex) **5** ：返回startIndex和 endIndex-1 之间的码，点个数
+- String replace(CharSequence oldString, CharSequence newString) ：返回一个新字符串。这个字符串用newString代替原始字符串中所有的oldString。可以用String或StringBuilder对象作为CharSequence参数
+- String substring(int beginIndex)
+- String substring(int beginIndex, int endIndex) ：返回一个新字符串。这个字符串包含原始字符串中从beginIndex到字符串末尾或 endIndex-1 的所有代码单元
+- String toLowerCase()
+- String toUpperCase() ：返回一个新字符串。这个字符串将原始字符串中的大写字母改为小写，或者将原始字符串中的所有小写字母改成大写字母
+- String trim()
+- String strip() **11**
+    - String stripLeading() **11**
+    - String stripTrailing() **11** ：返回一个新字符串。这个字符串将删除原始字符串头部和尾部<=U+0020的字符(trim)或空格(strip)
+- String join(CharSequence delimiter, CharSequence... elements) **8** ：返回一个新字符串，用给定的定界符连接所有元素
+- String repeat(int count) **11** ：返回一个字符串，将当前字符串重复count次
+
+在API注释中，有一些CharSequence类型的参数。这是一种接口类型，所有字符串都属于这个接口。第6章将介绍更多有关接口类型的内容。
+
+### 3.6.8 Reading the Online API Documentation
+[Java Platform, Standard Edition Documentation](https://docs.oracle.com/en/java/javase/index.html)
+
+### 3.6.9 Building Strings
+```java
+StringBuilder builder = new StringBuilder();
+
+builder.append(ch); // appends a single character
+builder.append(str); // appends a string
+
+String completedString = builder.toString();
+```
+- StringBuilder() ：构造一个空的字符串构建器
+- int length() ：返回构建器或缓冲器中的代码单元数量
+- StringBuilder append(String str) ：追加一个字符串并返回this
+- StringBuilder append(char c) ：追加一个代码单元并返回this
+- StringBuilder appendCodePoint(int cp) ：追加一个码点，并将其转换为一个或两个代码单元并返回ths
+- void setCharAt(int i, char c) ：将第i个代码单元设置为c
+- StringBuilder insert(int offset, String str) ：在offset位置插入一个字符串并返回this
+- StringBuilder insert(int offset, char c) ：在offset位置插人一个代码单元并返回this
+- StringBuilder delete(int startIndex, int endIndex) ：删除偏移量从startIndex到 endIndex-1 的代码单元并返回this
+- String toString() ：返回一个与构建器或缓冲器内容相同的字符串
+
+### 3.6.10 Text Blocks
+“文本块”（Text Block）功能是在Java 15中新增的一个特性，它使得提供跨越多行的字符串字面量变得更加简单。
+```java
+String greeting = """
+Hello
+World
+""";
+// equals "Hello\nWorld\n"
+```
+前面的"""不会附带换行符，后面的"""会附带一个换行符。可以使用\直接将将当前行与下一行连接起来，而不产生换行
+```java
+"""
+Hello, my name is Hal. \
+Please enter your name: """;
+// equals
+"Hello, my name is Hal. Please enter your name: "
+```
+在文本块中，行尾的空白字符会被删除，并且将Windows的行尾格式（\r\n）转换为普通的换行符（\n）。这样做是为了规范化行尾，并确保文本块中的每一行都以统一的行尾格式结束。但是，如果您确实需要保留行尾的空格，可以将最后一个空格字符转换为 \s 转义字符，这样它将被视为一个普通的字符而不是空格
+
+但行头的空白字符不会被删除：
+```java
+String html = """
+<div class="Warning">
+    Beware of those who say "Hello" to the world
+</div>
+""";
+// equals
+"<div class=\"Warning\">\n    Beware of those who say \"Hello\" to the world\n</div>\n"
+```
+完全的空行也不会被处理掉
+
+## 3.7 Input and Output
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
