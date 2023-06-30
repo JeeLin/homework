@@ -1,5 +1,6 @@
 # 编译器安装与选择
 - sudo apt-get install -y openjdk-8-jdk openjdk-11-jdk openjdk-17-jdk
+- sudo apt-get install -y openjdk-8-source openjdk-11-source openjdk-17-source
 - sudo update-alternatives --config java
 
 # 目录
