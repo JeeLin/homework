@@ -692,17 +692,165 @@ Java15开始，可以使用formatted方法格式化字符串：
 ```java
 String message = "Hello, %s. Next year, you'll be %d".formatted(name, age + 1);
 ```
+![printf语法图](images/printf%E8%AF%AD%E6%B3%95%E5%9B%BE.png)
 
 ### 3.7.3 File Input and Output
+读取文件：
+```java
+Scanner in = new Scanner(Path.of("myfile.txt"), StandardCharsets.UTF_8); // 使用UTF8编码读取文件 myfile.txt
+Scanner in = new Scanner(Path.of("c:\\mydirectory\\myfile.txt"), StandardCharsets.UTF_8); // 注意转移字符
+```
+如此就可以使用上面的Scanner对文件内容进行读取了。
 
+写入文件：
+```java
+PrintWriter out = new PrintWriter("myfile.txt", StandardCharsets.UTF_8); // 文件如果不存在，则会创建
 
+out.print("xxx");
+out.println("xxx");
+out.printf("%d", 1);
+```
 
+java.util.Scanner **5**
+- Scanner(Path p, String encoding) ：构造一个使用给定字符编码从给定路径读取数据的Scanner
+- Scanner(String data) ：构造一个从给定字符串读取数据的Scanner
 
+java.io.PrintWriter **1.1**
+- PrintWriter(String fileName) ：构造一个将数据写入文件的Printwriter。文件名由参数指定
 
+java.nio.file.Path
+- static Path of(String pathname) **11** ：根据给定的路径名构造一个Path
 
+## 3.8 Control Flow
+### 3.8.1 Block Scope
+块（即复合语句）是指由若干条Java语句组成的语句，并用一对大括号括起来。块确定了变量的作用域。一个块可以嵌套在另一个块中
+```java
+public static void main(String[] args)
+{
+    int n;
+    . . .
+    {
+        int k;
+        . . .
+    } // k is only defined up to here
+}
+```
+但是，不能在嵌套的两个块中声明同名的变量
+```java
+public static void main(String[] args)
+{
+    int n;
+    . . .
+    {
+        int k;
+        int n; // ERROR--can't redeclare n in inner block
+        . . .
+    }
+}
+```
 
+### 3.8.2 Conditional Statements
+```java
+if (condition) statement
+```
+条件必须使用小括号括起来。如果需要在条件为真时执行多个语句，可以使用`块语句`（block statement）：
+```java
+if (condition)
+{
+    statement1
+    statement2
+    . . .
+}
 
+// For example
+if (yourSales >= target)
+{
+    performance = "Satisfactory";
+    bonus = 100;
+}
+```
 
+Java更一般的条件语句如下：
+```java
+if (condition1) statement1 
+else if(condition2) statement2
+else if(condition3) statement3
+else if(condition4) statement4
+...
+else statementn
+
+// For example
+if (yourSales >= 2 * target)
+{
+    performance = "Excellent";
+    bonus = 1000;
+}
+else if (yourSales >= 1.5 * target)
+{
+    performance = "Fine";
+    bonus = 500;
+}
+else if (yourSales >= target)
+{
+    performance = "Satisfactory";
+    bonus = 100;
+}
+else
+{
+    System.out.println("You're fired");
+}
+```
+
+### 3.8.3 Loops
+```java
+while (condition) statement
+// For example
+while (balance < goal)
+{
+    balance += payment;
+    double interest = balance * interestRate / 100;
+    balance += interest;
+    years++;
+}
+```
+可以查看[while示例](corejava/v1ch03/Retirement/Retirement.java)。
+
+while循环语句在最前面检测循环条件。因此，循环体中的代码有可能一次都不执行。如果希望循环体至少执行一次，需要使用do/while循环将检测放在最后
+```java
+do statement while (condition);
+// For example
+do
+{
+    balance += payment;
+    double interest = balance * interestRate / 100;
+    balance += interest;
+    years++;
+    // print current balance
+    . . .
+    // ask if ready to retire and get input
+    . . .
+}
+while (input.equals("N"));
+```
+可以查看[do-while示例](corejava/v1ch03/Retirement2/Retirement2.java)。
+
+### 3.8.4 Determinate Loops
+for循环语句是支持迭代的一种通用结构，由一个计数器或类似的变量控制迭代次数，每次迭代后这个变量将会更新
+```java
+for (int i = 1; i <= 10; i++) // 依次是对计数器 初始化，新循环的判断，循环结束更新的规则
+    System.out.println(i);
+```
+- 如果计数器使用浮点数，要注意浮点数可能无法准确表示，倒是永远不会停止
+    ```java
+    for (double x = 0; x != 10; x += 0.1) . . . //  x直接从9.99999999999998变为10.09999999999998
+    ```
+- 以上在括号中声明的int i、double x，作用域都只在for循环体内，循环结束后的其他地方无法使用
+- 不同的for循环可以使用相同的变量名作为计数值
+- for循环只是while的简化形式
+
+[for示例](corejava/v1ch03/LotteryOdds/LotteryOdds.java)
+
+### 3.8.5 Multiple Selections with `switch`
 
 
 
