@@ -851,6 +851,154 @@ for (int i = 1; i <= 10; i++) // 依次是对计数器 初始化，新循环的�
 [for示例](corejava/v1ch03/LotteryOdds/LotteryOdds.java)
 
 ### 3.8.5 Multiple Selections with `switch`
+switch示例：
+```java
+Scanner in = new Scanner(System.in);
+System.out.print("Select an option (1, 2, 3, 4) ");
+int choice = in.nextInt();
+switch (choice)
+{
+    case 1:
+        ...
+        break;
+    case 2:
+        ...
+        break;
+    case 3:
+        ...
+        break;
+    case 4:
+        ...
+        break;
+    default:
+        System.out.println("Bad input");
+}
+```
+这种形式需要使用break跳出当前条件。如果没有break，会继续走下面一个条件的逻辑。需要注意产生错误。
+
+如果你担心出现错误，可以尝试在编译代码时增加 -Xlint:fallthrough 选项，如：
+```shell
+javac -Xlint:fallthrough Test.java
+```
+如果你确实想使用这种“直通式”(fallthrough)的形式，可以在外围方法增加@SuppressWarnings("fallthrough")注解，避免编译时产生警告
+
+Java**14**新增了一下的switch语法：
+```java
+switch (choice)
+{
+    case 1 ->
+    . . .
+    case 2 ->
+    . . .
+    case 3 ->
+    . . .
+    case 4 ->
+    . . .
+    default ->
+        System.out.println("Bad input");
+}
+// 在case中可以使用yield跳出当前switch
+```
+
+case标签中可以是：
+1. 类似为char、byte、shore或int的常量表达式
+2. 枚举值
+3. Java**7**开始，还可以是字符串字面量
+4. Java**14**开始，一个以上的条件，可以使用逗号分隔
+```java
+// >=14
+var result = switch (status) {
+    case OPEN -> 1;
+    case PROCESS, PENDING -> 2;
+    case CLOSE -> 3;
+    default -> throw new RuntimeException("状态不正确");
+};
+```
+
+- No fallthrough + Expression
+    ```java
+    int numLetters = switch(seasonName)
+    {
+        case "Spring" ->
+        {
+            System.out.println("spring!");
+            yield 6;
+        }
+        case "Summer", "Winter" -> 6;
+        case "Fall" -> 4;
+        default -> -1;
+    }
+    ```
+- No fallthrough + statement
+    ```java
+    switch(seasonName)
+    {
+        case "Spring" ->
+        {
+            System.out.println("spring!");
+            numLetters = 6;
+        }
+        case "Summer", "Winter" -> numLetters = 6;
+        case "Fall" -> numLetters = 4;
+        default -> numLetters = -1;
+    }
+    ```
+- fallthrough + Expression
+    ```java
+    int numLetters = switch(seasonName)
+    {
+        case "Spring": System.out.println("spring!");
+        case "Summer", "Winter": yield 6;
+        case "Fall": yield 4;
+        default: yield -1;
+    }
+    ```
+- fallthrough + statement
+    ```java
+    switch(seasonName)
+    {
+        case "Spring": System.out.println("spring!");
+        case "Summer", "Winter": numLetters = 6;
+        case "Fall": numLetters = 4;
+        default: numLetters = -1;
+    }
+    ```
+
+### 3.8.6 Statements That Break Control Flow
+在c++不建议频繁使用goto，Java中有一个一样功能的语句：带标签的break
+
+不带标签的break可以推出循环语句：
+```java
+while (years <= 100)
+{
+    balance += payment;
+    double interest = balance * interestRate / 100;
+    balance += interest;
+    if (balance >= goal) break; // quit
+    years++;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
