@@ -967,7 +967,7 @@ var result = switch (status) {
 ### 3.8.6 Statements That Break Control Flow
 在c++不建议频繁使用goto，Java中有一个一样功能的语句：带标签的break
 
-不带标签的break可以推出循环语句：
+不带标签的break可以退出循环语句：
 ```java
 while (years <= 100)
 {
@@ -978,18 +978,179 @@ while (years <= 100)
     years++;
 }
 ```
+使用带标签的break跳转到指定语句：
+
+```java
+Scanner in = new Scanner(System.in);
+int n;
+read_data:
+while (. . .) // this loop statement is tagged with the label
+{
+    . . .
+    for (. . .) // this inner loop is not labeled
+    {
+        System.out.print("Enter a number >= 0: ");
+        n = in.nextInt();
+        if (n < 0) // should never happen—can't go on
+        break read_data;
+        // break out of read_data loop
+        . . .
+    }
+}
+```
+可以将标签应用到任何语句，设置直接用到if语句或块语句：
+```java
+label:
+{
+    . . .
+    if (condition) break label; // exits block
+    . . .
+}
+// jumps here when the break statement executes
+```
 
 
+continue语句将控制转移到最内层循环的首部
+```java
+Scanner in = new Scanner(System.in);
+while (sum < goal)
+{
+    System.out.print("Enter a number: ");
+    n = in.nextInt();
+    if (n < 0) continue;
+    sum += n; // not executed if n < 0
+}
+```
+continue语句也可以带标签跳转
 
 
+## 3.9 Big Numbers
+```java
+BigInteger.valueOf(100);
+new BigInteger("222232244629420445529739893461909967206666939096499764990979600");
+
+// BigDecimal 应该使用string传入初始化
+new BigDecimal(0.1); // has digits 0.1000000000000000055511151231257827021181583404541015625
+
+new BigDecimal("0.1");
+```
+
+java.math.BigInteger **1.1**
+- BigInteger add(BigInteger other)
+- BigInteger subtract(BigInteger other)
+- BigInteger multiply(BigInteger other)
+- BigInteger divide(BigInteger other)
+- BigInteger mod(BigInteger other)：
+返回这个大整数和另一个大整数other的和、差、积、商以及余数。
+- BigInteger sqrt() **9**：
+得到这个BigInteger的平方根。
+- int compareTo(BigInteger other)：
+如果这个大整数与另一个大整数other相等，返回0；如果这个大整数小于另一个大整
+数other,返回负数；否则，返回正数。
+- static BigInteger valueOf(long x)：
+返回值等于x的大整数。
+
+java.math.BigDecimal **1.1**
+- BigDecimal(String digits)：
+使用给定的字符构造大实数。
+- BigDecimal add(BigDecimal other)
+- BigDecimal subtract(BigDecimal other)
+- BigDecimal multiply(BigDecimal other)
+- BigDecimal divide(BigDecimal other)
+- BigDecimal divide(BigDecimal other, RoundingMode mode) **5**：
+返回这个大实数与other的和、差、积、商。如果商是个无限循环小数，第一个divide方
+法会抛出一个异常。要得到一个舍入的结果，就要使用第二个方法。RoundingMode.HALF UP是
+在学校中学习的四舍五入方式（即，0到4舍去，5到9进位）。它适用于常规的计算。有
+关其他的舍人方式请参看API文档。
+- int compareTo(BigDecimal other)：
+如果这个大实数与other相等，返回0；如果这个大实数小于other,返回负数；否则，
+返回正数。
 
 
+## 3.10 Arrays
 
+### 3.10.1 Declaring Arrays
+```java
+int[] a;
+a =  = new int[] { 17, 19, 23, 29, 31 };
+int[] b = new int[100]; // or var a = new int[100];
+int[] smallPrimes = { 2, 3, 5, 7, 11, 13 };
+String[] authors =
+{
+    "James Gosling",
+    "Bill Joy",
+    "Guy Steele",
+    // add more names here and put a comma after each name
+};
+```
 
+### 3.10.2 Accessing Array Elements
+```java
+int[] a = new int[100];
+for (int i = 0; i < 100; i++)
+    a[i] = i; // fills the array with numbers 0 to 99
 
+for (int i = 0; i < a.length; i++)
+    System.out.println(a[i]);
+```
 
+### 3.10.3 The “for each” Loop
+```pseudo
+for (variable : collection) statement
+```
+```java
+for (int element : a)
+    System.out.println(element);
+```
 
+### 3.10.4 Array Copying
+```java
+int[] copiedLuckyNumbers = Arrays.copyOf(luckyNumbers, luckyNumbers.length);
 
+luckyNumbers = Arrays.copyOf(luckyNumbers, 2 * luckyNumbers.length);
+```
+
+## 3.10.5 Command-Line parameters
+```java
+public class Message
+{
+    // java Message -g cruel world
+    // args[0]: "-g"
+    // args[1]: "cruel"
+    // args[2]: "world"
+    public static void main(String[] args)
+    {
+        if (args.length == 0 || args[0].equals("-h"))
+        System.out.print("Hello,");
+        else if (args[0].equals("-g"))
+        System.out.print("Goodbye,");
+        // print the other command-line arguments
+        for (int i = 1; i < args.length; i++)
+        System.out.print(" " + args[i]);
+        System.out.println("!");
+    }
+}
+```
+
+## 3.10.6 Array Sorting
+```java
+Arrays.sort(a); // quick sort
+```
+
+[抽彩游戏](./corejava/v1ch03/LotteryDrawing/LotteryDrawing.java)
+
+java.util.Arrays **1.2**
+- static String toString(xxx[] a) **5**：返回包含中元素的一个字符串，这些元素用中括号包围，并用逗号分隔。在这个方法以及后面的方法中，数组元素类型xxx可以是int、long、short、char、byte、boolean、float或double。
+- static xxx[] copyOf(xxx[] a, int end) **6**
+• static xxx[] copyOfRange(xxx[] a, int start, int end) **6**：返回与a类型相同的一个数组，其长度为length或者end-start，数组元素为a的值。如果end大于a.length,结果会填充0或false值。
+• static void sort(xxx[] a)：使用优化的快速排序算法对数组进行排序。
+• static int binarySearch(xxx[] a, xxx v)
+• static int binarySearch(xxx[] a, int start, int end, xxx v) **6**：使用二分查找算法在有序数组a中查找值v。如果找到v，则返回相应的下标；否则，返回一个负数值。-r-1 是v应插入的位置（为保持a有序）。
+• static void fill( xxx [] a, xxx v)
+sets all elements of the array to v .
+• static boolean equals( xxx [] a, xxx [] b)
+returns true if the arrays have the same length and if the elements at corresponding
+indexes match.
 
 
 
