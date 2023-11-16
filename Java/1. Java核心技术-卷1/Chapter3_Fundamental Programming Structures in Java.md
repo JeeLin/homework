@@ -1142,29 +1142,30 @@ Arrays.sort(a); // quick sort
 java.util.Arrays **1.2**
 - static String toString(xxx[] a) **5**：返回包含中元素的一个字符串，这些元素用中括号包围，并用逗号分隔。在这个方法以及后面的方法中，数组元素类型xxx可以是int、long、short、char、byte、boolean、float或double。
 - static xxx[] copyOf(xxx[] a, int end) **6**
-• static xxx[] copyOfRange(xxx[] a, int start, int end) **6**：返回与a类型相同的一个数组，其长度为length或者end-start，数组元素为a的值。如果end大于a.length,结果会填充0或false值。
-• static void sort(xxx[] a)：使用优化的快速排序算法对数组进行排序。
-• static int binarySearch(xxx[] a, xxx v)
-• static int binarySearch(xxx[] a, int start, int end, xxx v) **6**：使用二分查找算法在有序数组a中查找值v。如果找到v，则返回相应的下标；否则，返回一个负数值。-r-1 是v应插入的位置（为保持a有序）。
-• static void fill( xxx [] a, xxx v)
-sets all elements of the array to v .
-• static boolean equals( xxx [] a, xxx [] b)
-returns true if the arrays have the same length and if the elements at corresponding
-indexes match.
+- static xxx[] copyOfRange(xxx[] a, int start, int end) **6**：返回与a类型相同的一个数组，其长度为length或者end-start，数组元素为a的值。如果end大于a.length,结果会填充0或false值。
+- static void sort(xxx[] a)：使用优化的快速排序算法对数组进行排序。
+- static int binarySearch(xxx[] a, xxx v)
+- static int binarySearch(xxx[] a, int start, int end, xxx v) **6**：使用二分查找算法在有序数组a中查找值v。如果找到v，则返回相应的下标；否则，返回一个负数值。-r-1 是v应插入的位置（为保持a有序）。
+- static void fill(xxx[] a, xxx v)：将数组的所有数据元素设置为V。
+- static boolean equals(xxx[] a, xxx[] b)：如果两个数组大小相同，并且下标相同的元素都对应相等，返回tue。
 
+### 3.10.7 Multidimensional Arrays
+```java
+int[][] magicSquare =
+{
+    {16, 3, 2, 13},
+    {5, 10, 11, 8},
+    {9, 6, 7, 12},
+    {4, 15, 14, 1}
+};
+```
+```pseudo
+for (double[] row : a)
+    for (double value : row)
+        do something with value
+```
 
+### 3.10.8 Ragged Arrays
+Java的多维数组实际上是“数组的数组”，每层的容量是一样的。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+只要每层的数据量不超过容量，即可使用。
